@@ -1,0 +1,55 @@
+import numpy as np
+# Definir el sistema de ecuaciones
+def gauss_seidel(A, b, x0, tol, max_iter):
+    n = len(b)
+    x = x0.copy()
+    error = np.zeros(n)  # Para almacenar los errores
+    errores_por_iteracion = []  # Para guardar los errores en cada iteración
+    for k in range(max_iter):
+        x_old = x.copy()
+        for i in range(n):
+            sum1 = sum(A[i][j] * x[j] for j in range(i))
+            sum2 = sum(A[i][j] * x_old[j] for j in range(i + 1, n))
+            x[i] = (b[i] - sum1 - sum2) / A[i][i]
+
+        # Calcular el error en cada iteración
+        error = np.abs(x - x_old)
+        
+        # Guardar los errores de la iteración actual
+        errores_por_iteracion.append(error.copy())
+        
+        # Mostrar los valores en cada iteración
+        print(f"Iteración {k+1}: x = {x}, error = {error}")
+        
+        # Verificar si el error es menor que la tolerancia
+        if np.all(error < tol):
+            print("Convergencia alcanzada.")
+            break
+    return x, errores_por_iteracion
+
+# Definir el sistema de ecuaciones
+A = np.array([[3, -0.1, -0.2], 
+              [0.1, 7, -0.3], 
+              [0.3, -0.2, 10]])
+
+b = np.array([7.85, -19.3, 71.4])
+
+# Vector inicial (puede comenzar con ceros o cualquier valor)
+x0 = np.array([0.0, 0.0, 0.0])
+
+# Parámetros de tolerancia y máximo de iteraciones
+tolerancia = 1e-6
+max_iter = 100
+
+# Ejecutar el método de Gauss-Seidel
+solucion, errores = gauss_seidel(A, b, x0, tolerancia, max_iter)
+
+# Imprimir la solución final
+print("\nSolución final: ")
+for i in range(len(solucion)):
+    print(f"x_{i+1} = {solucion[i]}")
+
+# Imprimir los errores en cada iteración
+print("\nErrores por iteración:")
+for idx, err in enumerate(errores):
+    print(f"Iteración {idx+1}: Error = {err}")
